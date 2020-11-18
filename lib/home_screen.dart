@@ -2,7 +2,7 @@ import 'package:after_layout/after_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:time_counter/helpers/local_data_manager.dart';
 import 'package:time_counter/partials/home_list_task_item.dart';
-import 'package:time_counter/showAddTaskDialog.dart';
+import 'package:time_counter/partials/showAddTaskDialog.dart';
 import 'package:time_counter/values/todo_localization.dart';
 import 'package:vibration/vibration.dart';
 
@@ -81,6 +81,8 @@ class _HomeScreenState extends State<HomeScreen>
                 },
                 child: HomeListTaskItem(
                   task: itemTask,
+                  deleteTask: _deleteTask,
+                  editTask: _editTask,
                 ),
               )
           ],
@@ -113,5 +115,17 @@ class _HomeScreenState extends State<HomeScreen>
     this.listTask[index] = task;
 
     LocalDataManager().setLocalListTask(this.listTask);
+  }
+
+  _deleteTask(String idTask) {
+    this.listTask.removeWhere((element) {
+      return element.id == idTask;
+    });
+    LocalDataManager().setLocalListTask(this.listTask);
+  }
+
+  _editTask(Task task) {
+    showAddTaskDialog(
+        context: context, functionRefreshList: _refresh, editingTask: task);
   }
 }

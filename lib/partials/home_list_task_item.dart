@@ -3,6 +3,7 @@ import 'package:time_counter/helpers/diference_time_helper.dart';
 import 'package:time_counter/models/task_model.dart';
 import 'package:time_counter/values/todo_localization.dart';
 
+// ignore: must_be_immutable
 class HomeListTaskItem extends StatefulWidget {
   final Task task;
   Function deleteTask;
@@ -32,6 +33,7 @@ class _HomeListTaskItemState extends State<HomeListTaskItem> {
         borderRadius: BorderRadius.circular(7),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -57,7 +59,7 @@ class _HomeListTaskItemState extends State<HomeListTaskItem> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                _getDuration(),
+                _getCustomTime(),
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 36,
@@ -116,12 +118,17 @@ class _HomeListTaskItemState extends State<HomeListTaskItem> {
               )
             ],
           ),
+          (widget.task.taskValue != 0)
+              ? Text(
+                  "R\$ " + _getValue().toStringAsPrecision(2),
+                )
+              : Container(),
         ],
       ),
     );
   }
 
-  String _getDuration() {
+  String _getCustomTime() {
     if (widget.task.active) {
       Duration temp = widget.task.lastTotal +
           widget.task.lastStart.difference(DateTime.now()).abs();
@@ -129,5 +136,18 @@ class _HomeListTaskItemState extends State<HomeListTaskItem> {
     } else {
       return getDifferenceTime(widget.task.lastTotal).toString();
     }
+  }
+
+  Duration _getDuration() {
+    if (widget.task.active) {
+      return widget.task.lastTotal +
+          widget.task.lastStart.difference(DateTime.now()).abs();
+    } else {
+      return widget.task.lastTotal;
+    }
+  }
+
+  double _getValue() {
+    return (widget.task.taskValue / 3600) * _getDuration().inSeconds;
   }
 }

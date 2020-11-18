@@ -10,4 +10,5 @@ class TodoLocalization {
   static const String delete_task_warning = "Essa ação é irreversível!";
   static const String yes = "Sim";
   static const String no = "Não";
+  static const String show_advanced_options = "Avançado";
 }

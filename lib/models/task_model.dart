@@ -4,8 +4,15 @@ class Task {
   Duration lastTotal;
   DateTime lastStart;
   bool active;
+  double taskValue;
 
-  Task({this.id, this.name, this.lastTotal, this.lastStart, this.active});
+  Task(
+      {this.id,
+      this.name,
+      this.lastTotal,
+      this.lastStart,
+      this.active,
+      this.taskValue});
 
   Task.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -13,6 +20,7 @@ class Task {
     lastTotal = Duration(seconds: json['lastTotal']);
     lastStart = DateTime.parse(json['lastStart']);
     active = json['active'];
+    taskValue = json['taskValue'];
   }
 
   Map<String, dynamic> toJson() {
@@ -22,6 +30,7 @@ class Task {
     data['lastTotal'] = this.lastTotal.inSeconds;
     data['lastStart'] = this.lastStart.toString();
     data['active'] = this.active;
+    data['taskValue'] = this.taskValue;
     return data;
   }
 }

@@ -182,6 +182,8 @@ _saveTask(
   LocalDataManager ldm = LocalDataManager();
 
   if (!isEditing) {
+    task.lastTotal = DateTime.now().difference(DateTime.now());
+    task.lastStart = DateTime.now();
     ldm.addLocalTask(task);
   } else {
     List<Task> listTask = await ldm.getLocalListTask();

@@ -2,17 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:time_counter/helpers/diference_time_helper.dart';
 import 'package:time_counter/models/task_model.dart';
 import 'package:time_counter/values/todo_localization.dart';
+import 'package:toast/toast.dart';
 
 // ignore: must_be_immutable
 class HomeListTaskItem extends StatefulWidget {
   final Task task;
   Function deleteTask;
   Function editTask;
-  HomeListTaskItem({
-    this.task,
-    this.deleteTask,
-    this.editTask,
-  });
+  Function resetTask;
+  HomeListTaskItem({this.task, this.deleteTask, this.editTask, this.resetTask});
 
   @override
   _HomeListTaskItemState createState() => _HomeListTaskItemState();
@@ -69,11 +67,27 @@ class _HomeListTaskItemState extends State<HomeListTaskItem> {
                 children: [
                   GestureDetector(
                     child: Icon(
+                      Icons.refresh_rounded,
+                      color: Colors.blue,
+                    ),
+                    onTap: () {
+                      _showResetAlertDialog(context);
+                    },
+                    onLongPress: () {
+                      Toast.show("Zerar o contador", context);
+                    },
+                  ),
+                  Padding(padding: EdgeInsets.only(left: 10)),
+                  GestureDetector(
+                    child: Icon(
                       Icons.edit,
                       color: Colors.orange,
                     ),
                     onTap: () {
                       widget.editTask(widget.task);
+                    },
+                    onLongPress: () {
+                      Toast.show("Editar a tarefa", context);
                     },
                   ),
                   Padding(padding: EdgeInsets.only(left: 10)),
@@ -82,36 +96,11 @@ class _HomeListTaskItemState extends State<HomeListTaskItem> {
                       Icons.delete,
                       color: Colors.red,
                     ),
+                    onLongPress: () {
+                      Toast.show("Excluir a tarefa", context);
+                    },
                     onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            title: Text(
-                                "Deseja deletar " + widget.task.name + "?"),
-                            content: Text(TodoLocalization.delete_task_warning),
-                            actions: [
-                              RaisedButton(
-                                child: Text(TodoLocalization.yes),
-                                onPressed: () {
-                                  widget.deleteTask(widget.task.id);
-                                  Navigator.pop(context);
-                                },
-                              ),
-                              RaisedButton(
-                                color: Colors.purple,
-                                child: Text(
-                                  TodoLocalization.no,
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                              ),
-                            ],
-                          );
-                        },
-                      );
+                      _showDeletAlertDialog(context);
                     },
                   )
                 ],
@@ -123,18 +112,109 @@ class _HomeListTaskItemState extends State<HomeListTaskItem> {
                   "R\$ " + _getValue().toStringAsPrecision(2),
                 )
               : Container(),
+          (widget.task.durationHistory != null &&
+                  widget.task.durationHistory.isNotEmpty)
+              ? Padding(
+                  padding: EdgeInsets.only(top: 5),
+                  child: Row(
+                    children: [
+                      Text(
+                        "Total: " +
+                            _getCustomTime(
+                                addSeconds: widget.task.getTotalHistoric()),
+                        style: TextStyle(fontSize: 10, color: Colors.grey),
+                      )
+                    ],
+                  ),
+                )
+              : Container(),
         ],
       ),
     );
   }
 
-  String _getCustomTime() {
+  Future _showResetAlertDialog(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Deseja zerar '" + widget.task.name + "'?"),
+          content: Text(TodoLocalization.delete_task_warning),
+          actions: [
+            ElevatedButton(
+              child: Text(TodoLocalization.yes),
+              onPressed: () {
+                widget.resetTask(widget.task.id);
+                Navigator.pop(context);
+              },
+            ),
+            ElevatedButton(
+              style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.grey)),
+              child: Text(
+                TodoLocalization.no,
+                style: TextStyle(color: Colors.white),
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future _showDeletAlertDialog(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Deseja deletar '" + widget.task.name + "'?"),
+          content: Text(TodoLocalization.delete_task_warning),
+          actions: [
+            ElevatedButton(
+              child: Text(TodoLocalization.yes),
+              onPressed: () {
+                widget.deleteTask(widget.task.id);
+                Navigator.pop(context);
+              },
+            ),
+            ElevatedButton(
+              style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.grey)),
+              child: Text(
+                TodoLocalization.no,
+                style: TextStyle(color: Colors.white),
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  String _getCustomTime({int addSeconds}) {
     if (widget.task.active) {
       Duration temp = widget.task.lastTotal +
           widget.task.lastStart.difference(DateTime.now()).abs();
+      if (addSeconds != null) {
+        temp = temp + Duration(seconds: addSeconds);
+      }
       return getDifferenceTime(temp).toString();
     } else {
-      return getDifferenceTime(widget.task.lastTotal).toString();
+      if (addSeconds != null) {
+        return getDifferenceTime(
+                widget.task.lastTotal + Duration(seconds: addSeconds))
+            .toString();
+      } else {
+        return getDifferenceTime(widget.task.lastTotal).toString();
+      }
     }
   }
 

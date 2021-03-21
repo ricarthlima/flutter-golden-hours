@@ -1,4 +1,4 @@
-package com.example.time_counter
+package lima.ricarth.golden_hours
 
 import io.flutter.embedding.android.FlutterActivity
 

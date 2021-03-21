@@ -15,7 +15,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen>
     with AfterLayoutMixin<HomeScreen> {
-  List<Task> listTask = List<Task>();
+  List<Task> listTask = <Task>[];
 
   @override
   void initState() {
@@ -45,16 +45,16 @@ class _HomeScreenState extends State<HomeScreen>
           );
         },
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: [
-          BottomNavigationBarItem(
-              icon: Icon(Icons.today), title: Text("Só hoje")),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.next_week), title: Text("Essa semana")),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.timer), title: Text("Todo o tempo"))
-        ],
-      ),
+      //TODO: Bottom Navagation
+      // bottomNavigationBar: BottomNavigationBar(
+      //   items: [
+      //     BottomNavigationBarItem(icon: Icon(Icons.today), label: "Só hoje"),
+      //     BottomNavigationBarItem(
+      //         icon: Icon(Icons.next_week), label: "Essa semana"),
+      //     BottomNavigationBarItem(
+      //         icon: Icon(Icons.timer), label: "Todo o tempo")
+      //   ],
+      // ),
       body: Container(
         padding: EdgeInsets.all(10),
         child: ListView(
@@ -83,8 +83,23 @@ class _HomeScreenState extends State<HomeScreen>
                   task: itemTask,
                   deleteTask: _deleteTask,
                   editTask: _editTask,
+                  resetTask: _resetTask,
                 ),
-              )
+              ),
+            Padding(
+              padding: EdgeInsets.only(right: 75),
+              child: Text(
+                "Dicas:\n- Use o botão flutuante para adicionar uma nova tarefa!" +
+                    "\n- Clique na tarefa para pausar ou retormar a contagem!" +
+                    "\n- Use o botão editar para alterar as propriedades da tarefa!" +
+                    "\n- Use o botão lixeira para excluir a tarefa!",
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 12,
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -127,5 +142,11 @@ class _HomeScreenState extends State<HomeScreen>
   _editTask(Task task) {
     showAddTaskDialog(
         context: context, functionRefreshList: _refresh, editingTask: task);
+  }
+
+  _resetTask(String idTask) {
+    this.listTask.firstWhere((element) => element.id == idTask).reset();
+    LocalDataManager().setLocalListTask(this.listTask);
+    LocalDataManager().printData();
   }
 }

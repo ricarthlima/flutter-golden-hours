@@ -135,7 +135,7 @@ showAddTaskDialog({
                         )
                       ],
                     ),
-                    RaisedButton(
+                    ElevatedButton(
                         child: !isEditing
                             ? Text(
                                 TodoLocalization.add_dialog_add_button_title,
@@ -149,7 +149,9 @@ showAddTaskDialog({
                                   color: Colors.white,
                                 ),
                               ),
-                        color: Colors.purple,
+                        style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                                Colors.purple)),
                         onPressed: () {
                           if (_formKey.currentState.validate()) {
                             // Atribuir no Model

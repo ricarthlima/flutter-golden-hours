@@ -73,4 +73,9 @@ class Task {
     });
     return total;
   }
+
+  int getMediumHistoric() {
+    int total = getTotalHistoric();
+    return total ~/ this.durationHistory.length;
+  }
 }

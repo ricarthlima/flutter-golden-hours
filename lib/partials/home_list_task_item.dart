@@ -121,7 +121,12 @@ class _HomeListTaskItemState extends State<HomeListTaskItem> {
                       Text(
                         "Total: " +
                             _getCustomTime(
-                                addSeconds: widget.task.getTotalHistoric()),
+                              addSeconds: widget.task.getTotalHistoric(),
+                            ) +
+                            " | Média: " +
+                            getDifferenceTime(Duration(
+                                    seconds: widget.task.getMediumHistoric()))
+                                .toString(),
                         style: TextStyle(fontSize: 10, color: Colors.grey),
                       )
                     ],

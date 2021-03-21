@@ -9,13 +9,13 @@ class LocalDataManager {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<Task> list = await getLocalListTask();
     list.add(task);
-    prefs.setString(PreferencesKeys.listTasks, json.encode(list));
+    prefs.setString(PreferencesKeys().getListTaks(), json.encode(list));
   }
 
   Future<List<Task>> getLocalListTask() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    var result = prefs.getString(PreferencesKeys.listTasks);
+    var result = prefs.getString(PreferencesKeys().getListTaks());
     List<Task> list = <Task>[];
     if (result != null) {
       List<dynamic> listDy = json.decode(result);
@@ -28,12 +28,12 @@ class LocalDataManager {
 
   setLocalListTask(List<Task> listTask) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString(PreferencesKeys.listTasks, json.encode(listTask));
+    prefs.setString(PreferencesKeys().getListTaks(), json.encode(listTask));
   }
 
   printData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var result = prefs.getString(PreferencesKeys.listTasks);
+    var result = prefs.getString(PreferencesKeys().getListTaks());
     print(result);
   }
 }

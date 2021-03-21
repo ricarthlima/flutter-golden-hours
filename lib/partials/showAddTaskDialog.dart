@@ -35,13 +35,19 @@ showAddTaskDialog({
   final _formKey = GlobalKey<FormState>();
   showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(25.0))),
       builder: (context) {
         return StatefulBuilder(builder: (context, setState) {
-          return Container(
-            padding: EdgeInsets.all(20),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
+          return AnimatedContainer(
+            duration: Duration(milliseconds: 700),
+            curve: Curves.linearToEaseOut,
+            height: (isShowingAdvanced) ? 240 : 180,
+            padding: EdgeInsets.fromLTRB(20, 20, 20, 10),
+            child: ListView(
+              //   mainAxisAlignment: MainAxisAlignment.start,
+              //   crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   !isEditing

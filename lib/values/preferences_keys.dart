@@ -8,4 +8,6 @@ class PreferencesKeys {
       return "list_tasks";
     }
   }
+
+  static const String localUserData = "USER_INFORMATION";
 }

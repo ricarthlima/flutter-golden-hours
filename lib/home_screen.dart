@@ -1,14 +1,19 @@
 import 'package:after_layout/after_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:time_counter/helpers/local_data_manager.dart';
+import 'package:time_counter/pages/signup_page/signup_page.dart';
+import 'package:time_counter/partials/drawer.dart';
 import 'package:time_counter/partials/home_list_task_item.dart';
 import 'package:time_counter/partials/showAddTaskDialog.dart';
 import 'package:time_counter/values/todo_localization.dart';
 import 'package:vibration/vibration.dart';
 
+import 'models/local_user.dart';
 import 'models/task_model.dart';
 
 class HomeScreen extends StatefulWidget {
+  final LocalUser localUser;
+  HomeScreen({this.localUser});
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -16,17 +21,18 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with AfterLayoutMixin<HomeScreen> {
   List<Task> listTask = <Task>[];
+  LocalUser _localUser = LocalUser();
 
   @override
   void initState() {
-    _refresh();
-
+    _getLocalUser();
     super.initState();
   }
 
   @override
   void afterFirstLayout(BuildContext context) {
     _refresh();
+    _noUserVerification(context);
   }
 
   @override
@@ -36,6 +42,7 @@ class _HomeScreenState extends State<HomeScreen>
       appBar: AppBar(
         title: Text(TodoLocalization.appbar_title),
       ),
+      drawer: getDrawerHome(context, _localUser),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
@@ -148,5 +155,27 @@ class _HomeScreenState extends State<HomeScreen>
     this.listTask.firstWhere((element) => element.id == idTask).reset();
     LocalDataManager().setLocalListTask(this.listTask);
     LocalDataManager().printData();
+  }
+
+  _noUserVerification(BuildContext context) {
+    LocalDataManager().isUserInformationNull().then((value) {
+      if (value) {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => SignUpPage()));
+      }
+    });
+  }
+
+  _getLocalUser() {
+    this._localUser = widget.localUser;
+    if (this._localUser == null) {
+      this._localUser = LocalUser(avatarId: 0, email: "@@@", name: "Dotcode");
+    }
+
+    LocalDataManager().getLocalUser().then((value) {
+      setState(() {
+        this._localUser = value;
+      });
+    });
   }
 }

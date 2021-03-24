@@ -1,7 +1,7 @@
 class TodoLocalization {
   static const String appbar_title = "Golden Hours";
   static const String home_helper_text =
-      "Mensure seu tempo de trabalho! Lembre-se que você só deve trabalhar em uma coisa por vez.";
+      "Mensure seu tempo de trabalho!\nTente trabalhar em uma coisa por vez.";
   static const String add_dialog_new_title = "Adicionar tarefa";
   static const String add_dialog_edit_title = "Editar tarefa";
   static const String add_dialog_text_name = "Qual o nome da tarefa?";

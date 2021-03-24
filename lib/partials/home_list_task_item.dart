@@ -21,7 +21,6 @@ class _HomeListTaskItemState extends State<HomeListTaskItem> {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(7),
-      margin: EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
         color: widget.task.active ? Colors.purple[50] : Colors.grey[100],
         border: Border.all(
@@ -77,7 +76,7 @@ class _HomeListTaskItemState extends State<HomeListTaskItem> {
                       Toast.show("Zerar o contador", context);
                     },
                   ),
-                  Padding(padding: EdgeInsets.only(left: 10)),
+                  Padding(padding: EdgeInsets.only(left: 3)),
                   GestureDetector(
                     child: Icon(
                       Icons.edit,
@@ -90,7 +89,7 @@ class _HomeListTaskItemState extends State<HomeListTaskItem> {
                       Toast.show("Editar a tarefa", context);
                     },
                   ),
-                  Padding(padding: EdgeInsets.only(left: 10)),
+                  Padding(padding: EdgeInsets.only(left: 3)),
                   GestureDetector(
                     child: Icon(
                       Icons.delete,

@@ -1,5 +1,6 @@
 import 'package:after_layout/after_layout.dart';
 import 'package:flutter/material.dart';
+import 'package:time_counter/helpers/dialogs.dart';
 import 'package:time_counter/helpers/local_data_manager.dart';
 import 'package:time_counter/pages/signup_page/signup_page.dart';
 import 'package:time_counter/partials/drawer.dart';
@@ -23,6 +24,12 @@ class _HomeScreenState extends State<HomeScreen>
   List<Task> listTask = <Task>[];
   LocalUser _localUser = LocalUser();
 
+  String hints =
+      "Dicas:\n- Use o botão flutuante para adicionar uma nova tarefa!" +
+          "\n- Clique na tarefa para pausar ou retormar a contagem!" +
+          "\n- Use o botão editar para alterar as propriedades da tarefa!" +
+          "\n- Use o botão lixeira para excluir a tarefa!";
+
   @override
   void initState() {
     _getLocalUser();
@@ -41,6 +48,14 @@ class _HomeScreenState extends State<HomeScreen>
     return Scaffold(
       appBar: AppBar(
         title: Text(TodoLocalization.appbar_title),
+        actions: [
+          IconButton(
+              icon: Icon(Icons.lightbulb),
+              onPressed: () {
+                showDefaultDialog(
+                    context: context, title: "Dicas!", content: hints);
+              })
+        ],
       ),
       drawer: getDrawerHome(context, _localUser),
       floatingActionButton: FloatingActionButton(
@@ -52,65 +67,84 @@ class _HomeScreenState extends State<HomeScreen>
           );
         },
       ),
-      //TODO: Bottom Navagation
-      // bottomNavigationBar: BottomNavigationBar(
-      //   items: [
-      //     BottomNavigationBarItem(icon: Icon(Icons.today), label: "Só hoje"),
-      //     BottomNavigationBarItem(
-      //         icon: Icon(Icons.next_week), label: "Essa semana"),
-      //     BottomNavigationBarItem(
-      //         icon: Icon(Icons.timer), label: "Todo o tempo")
-      //   ],
-      // ),
       body: Container(
         padding: EdgeInsets.all(10),
-        child: ListView(
-          children: [
-            Text(
-              TodoLocalization.home_helper_text,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.purple,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(0, 6, 0, 10),
-              child: Divider(
-                color: Colors.purple,
-              ),
-            ),
-            for (Task itemTask in this.listTask)
-              GestureDetector(
-                onTap: () {
-                  Vibration.vibrate(duration: 50);
-                  _changeActive(itemTask);
+        child: this.listTask.isEmpty
+            ? Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 32, horizontal: 20),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 24),
+                      child: Image.asset(
+                        "assets/icon.png",
+                        width: 64,
+                      ),
+                    ),
+                    Text(
+                      TodoLocalization.home_helper_text,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.purple,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(100, 6, 100, 10),
+                      child: Divider(
+                        color: Colors.purple,
+                      ),
+                    ),
+                    Text(
+                      hints,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 12,
+                      ),
+                    )
+                  ],
+                ),
+              )
+            : ReorderableListView(
+                onReorder: (int oldIndex, int newIndex) {
+                  _reoderList(oldIndex, newIndex);
                 },
-                child: HomeListTaskItem(
-                  task: itemTask,
-                  deleteTask: _deleteTask,
-                  editTask: _editTask,
-                  resetTask: _resetTask,
-                ),
+                padding: EdgeInsets.only(bottom: 64),
+                children: [
+                  for (int index = 0; index < this.listTask.length; index++)
+                    GestureDetector(
+                      key: Key('$index'),
+                      onTap: () {
+                        Vibration.vibrate(duration: 50);
+                        _changeActive(this.listTask[index]);
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 2.5),
+                        child: HomeListTaskItem(
+                          task: this.listTask[index],
+                          deleteTask: _deleteTask,
+                          editTask: _editTask,
+                          resetTask: _resetTask,
+                        ),
+                      ),
+                    ),
+                ],
               ),
-            Padding(
-              padding: EdgeInsets.only(right: 75),
-              child: Text(
-                "Dicas:\n- Use o botão flutuante para adicionar uma nova tarefa!" +
-                    "\n- Clique na tarefa para pausar ou retormar a contagem!" +
-                    "\n- Use o botão editar para alterar as propriedades da tarefa!" +
-                    "\n- Use o botão lixeira para excluir a tarefa!",
-                textAlign: TextAlign.left,
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 12,
-                ),
-              ),
-            ),
-          ],
-        ),
       ),
     );
+  }
+
+  void _reoderList(int oldIndex, int newIndex) async {
+    setState(() {
+      if (oldIndex < newIndex) {
+        newIndex -= 1;
+      }
+      final Task task = listTask.removeAt(oldIndex);
+      listTask.insert(newIndex, task);
+    });
+    LocalDataManager().setLocalListTask(this.listTask);
   }
 
   _refresh() async {
